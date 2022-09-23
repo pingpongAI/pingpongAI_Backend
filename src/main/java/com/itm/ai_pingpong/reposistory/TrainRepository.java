@@ -1,3 +1,5 @@
+package com.itm.ai_pingpong.reposistory;
+
 import com.itm.ai_pingpong.domain.Train;
 import com.itm.ai_pingpong.domain.User;
 import java.time.LocalDate;
