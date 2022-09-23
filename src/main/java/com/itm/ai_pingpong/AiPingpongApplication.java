@@ -6,9 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class AiPingpongApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AiPingpongApplication.class, args);
 
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(AiPingpongApplication.class, args);
 
+  }
+  
 }
