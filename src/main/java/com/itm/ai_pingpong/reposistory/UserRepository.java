@@ -1,22 +1,12 @@
 package com.itm.ai_pingpong.reposistory;
 
 import com.itm.ai_pingpong.domain.User;
-import javax.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-@RequiredArgsConstructor
-public class UserRepository {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-  private final EntityManager em;
+  Optional<User> findByEmail(String name);
 
-  public void save(User user) {
-    em.persist(user);
-  }
-
-  public User findOne(Long id) {
-    return em.find(User.class, id);
-  }
-
+  boolean existsByEmail(String email);
 }
