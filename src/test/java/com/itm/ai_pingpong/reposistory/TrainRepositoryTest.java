@@ -1,60 +1,96 @@
 package com.itm.ai_pingpong.reposistory;
 
+import com.itm.ai_pingpong.domain.Member;
+import com.itm.ai_pingpong.domain.MemberStatus;
 import com.itm.ai_pingpong.domain.Train;
 import com.itm.ai_pingpong.domain.TrainType;
-import com.itm.ai_pingpong.domain.User;
-import com.itm.ai_pingpong.domain.UserStatus;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 
 @SpringBootTest
 @Transactional
 class TrainRepositoryTest {
 
   @Autowired
-  UserRepository userRepository;
+  MemberRepository memberRepository;
   @Autowired
   TrainRepository trainRepository;
 
+  Member generateMember() {
+    return Member.builder()
+        .email("test@test.com")
+        .tel("010-1212-1212")
+        .status(MemberStatus.BASIC)
+        .password("test")
+        .name("testMember")
+        .build();
+  }
+
   @Test
-  @Rollback(value = false)
-  void save() {
-    User user = new User(
-        "test@test.com",
-        "test",
-        "test",
-        "010-1234-1234",
-        LocalDateTime.now(),
-        LocalDateTime.now(),
-        UserStatus.BASIC
-    );
+  void 훈련_저장() throws Exception {
+    //given
+    Member member = generateMember();
+    memberRepository.save(member);
 
-    userRepository.save(user);
-
-    Train train1 = new Train(user, TrainType.FOREHAND, 10, 0, LocalDateTime.now().minusMinutes(30),
-        LocalDateTime.now().minusMinutes(20));
-    Train train2 = new Train(user, TrainType.BACKHAND, 10, 5, LocalDateTime.now(),
-        LocalDateTime.now().plusMinutes(10));
-
+    //when
+    Train train1 = Train.builder()
+        .member(member)
+        .type(TrainType.FOREHAND)
+        .rightCount(10)
+        .wrongCount(20)
+        .build();
     trainRepository.save(train1);
-    trainRepository.save(train2);
+
+    //then
+    Optional<Train> findTrain = trainRepository.findById(train1.getId());
+    Assertions.assertThat(findTrain.get()).isEqualTo(train1);
+
   }
 
   @Test
-  void findTrainSpecificDate() {
-    LocalDate localDate = LocalDate.now();
-    User findUser = userRepository.findOne(10L);
+  void 모든_훈련_검색() throws Exception {
+    //given
+    Member member = Member.builder()
+        .email("test@test.com")
+        .tel("010-1212-1212")
+        .status(MemberStatus.BASIC)
+        .password("test")
+        .name("testMember")
+        .build();
 
-    List<Train> trainSpecificDate = trainRepository.findTrainSpecificDate(findUser, localDate);
+    memberRepository.save(member);
 
-    Assertions.assertThat(trainSpecificDate.size()).isEqualTo(2);
+    Optional<Member> findMember = memberRepository.findByEmail(member.getEmail());
+
+    Train train1 = Train.builder()
+        .member(findMember.get())
+        .type(TrainType.FOREHAND)
+        .rightCount(10)
+        .wrongCount(20)
+        .build();
+    trainRepository.save(train1);
+
+    Train train2 = Train.builder()
+        .member(findMember.get())
+        .type(TrainType.FOREHAND)
+        .rightCount(11)
+        .wrongCount(22)
+        .build();
+    trainRepository.save(train2);
+
+    //when
+    List<Train> trainsByUser = trainRepository.findTrainsByMember(findMember.get());
+
+    //then
+    Assertions.assertThat(trainsByUser.size()).isEqualTo(2);
 
   }
+
 }
+
+
