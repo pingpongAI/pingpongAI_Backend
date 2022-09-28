@@ -1,12 +1,13 @@
 package com.itm.ai_pingpong.reposistory;
 
-import com.itm.ai_pingpong.domain.User;
+import com.itm.ai_pingpong.domain.Member;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
-  Optional<User> findByEmail(String name);
+  Optional<Member> findByEmail(String email);
 
   boolean existsByEmail(String email);
+
 }

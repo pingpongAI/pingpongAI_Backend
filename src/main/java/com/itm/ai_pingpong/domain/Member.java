@@ -1,5 +1,7 @@
 package com.itm.ai_pingpong.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,8 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,23 +22,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(
-    name = "users",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email"),
-    }
-)
-public class User extends BaseTimeEntity {
+public class Member extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "user_id")
+  @Column(name = "member_id")
   private Long id;
 
-//  @OneToMany(mappedBy = "user")
-//  private List<Train> trains = new ArrayList<>();
+  @OneToMany(mappedBy = "member")
+  private List<Train> trains = new ArrayList<>();
 
-  @Column(nullable = false, length = 30)
+  @Column(nullable = false, length = 30, unique = true)
   private String email;
 
   @Column(nullable = false)
@@ -50,7 +45,7 @@ public class User extends BaseTimeEntity {
   private String tel;
 
   @Enumerated(EnumType.STRING)
-  private UserStatus status;
+  private MemberStatus status;
 
   //==정보 수정==//
   public void updatePassword(PasswordEncoder passwordEncoder, String password) {
