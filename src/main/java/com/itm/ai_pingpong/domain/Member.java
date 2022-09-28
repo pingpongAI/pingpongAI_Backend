@@ -10,8 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,12 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(
-    name = "member",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email"),
-    }
-)
 public class Member extends BaseTimeEntity {
 
   @Id
@@ -40,7 +32,7 @@ public class Member extends BaseTimeEntity {
   @OneToMany(mappedBy = "member")
   private List<Train> trains = new ArrayList<>();
 
-  @Column(nullable = false, length = 30)
+  @Column(nullable = false, length = 30, unique = true)
   private String email;
 
   @Column(nullable = false)
