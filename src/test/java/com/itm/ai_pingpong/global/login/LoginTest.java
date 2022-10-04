@@ -1,5 +1,6 @@
 package com.itm.ai_pingpong.global.login;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -16,6 +17,7 @@ import javax.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -31,11 +33,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @AutoConfigureMockMvc
 public class LoginTest {
 
-  private static String KEY_USERMAIL = "username@test.com";
+  private static String KEY_USERMAIL = "usermail";
   private static String KEY_PASSWORD = "password";
   private static String USERMAIL = "username@test.com";
   private static String PASSWORD = "123456789";
   private static String LOGIN_URL = "/login";
+
+  @Value("${jwt.access.header}")
+  private String accessHeader;
+  @Value("${jwt.refresh.header}")
+  private String refreshHeader;
+
   @Autowired
   MockMvc mockMvc;
   @Autowired
@@ -99,11 +107,18 @@ public class LoginTest {
     //given
     Map<String, String> map = getUsernamePasswordMap(USERMAIL + "wrong", PASSWORD);
 
-    //when, then
-    MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
+    //when
+    MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+            .post(LOGIN_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(map)))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().isBadRequest())
         .andReturn();
+
+    //then
+    assertThat(result.getResponse().getHeader(accessHeader)).isNull();
+    assertThat(result.getResponse().getHeader(refreshHeader)).isNull();
 
   }
 
@@ -112,11 +127,18 @@ public class LoginTest {
     //given
     Map<String, String> map = getUsernamePasswordMap(USERMAIL, PASSWORD + "wrong");
 
-    //when, then
-    MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
+    //when
+    MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+            .post(LOGIN_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(map)))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().isBadRequest())
         .andReturn();
+
+    //then
+    assertThat(result.getResponse().getHeader(accessHeader)).isNull();
+    assertThat(result.getResponse().getHeader(refreshHeader)).isNull();
 
   }
 
@@ -134,14 +156,14 @@ public class LoginTest {
 
 
   @Test
-  public void 로그인_데이터형식_JSON이_아니면_200() throws Exception {
+  public void 로그인_데이터형식_JSON이_아니면_400() throws Exception {
     //given
     Map<String, String> map = getUsernamePasswordMap(USERMAIL, PASSWORD);
 
     //when, then
     perform(LOGIN_URL, APPLICATION_FORM_URLENCODED, map)
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().isBadRequest())
         .andReturn();
   }
 
