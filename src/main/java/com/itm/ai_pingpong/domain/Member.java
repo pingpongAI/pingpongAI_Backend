@@ -47,9 +47,33 @@ public class Member extends BaseTimeEntity {
   @Enumerated(EnumType.STRING)
   private MemberStatus status;
 
+  @Column(length = 1000)
+  private String refreshToken; // RefreshToken
+
   //==정보 수정==//
   public void updatePassword(PasswordEncoder passwordEncoder, String password) {
     this.password = passwordEncoder.encode(password);
+  }
+
+  public void updateMail(String mail) {
+    this.email = mail;
+
+  }
+
+  public void updateName(String name) {
+    this.name = name;
+  }
+
+  public void updateTel(String tel) {
+    this.tel = tel;
+  }
+
+  public void updateRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
+  }
+
+  public void destroyRefreshToken() {
+    this.refreshToken = null;
   }
 
   //==패스워드 암호화==//
@@ -57,6 +81,10 @@ public class Member extends BaseTimeEntity {
     this.password = passwordEncoder.encode(password);
   }
 
+  public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword) {
+
+    return false;
+  }
 }
 
 
