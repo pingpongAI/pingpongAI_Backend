@@ -1,0 +1,10 @@
+jwt:
+  secret: ZG9W5nLWJvb3Qtand0LWJhY2stZW5kLWFuZC1qcy1jb2xsYWJvuZ2h1bi1zaGFycC1kYnJ1YS13ZWItcHJvamVjdC11c2luZy1qd3Qtc2VjcmV0LURvbmdodW4tc3Bya
+
+  access:
+    expiration: 80
+    header: Authorization
+
+  refresh:
+    expiration: 9000
+    header: Authorization-refresh
