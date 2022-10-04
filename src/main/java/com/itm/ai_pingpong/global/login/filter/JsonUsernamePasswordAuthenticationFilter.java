@@ -23,7 +23,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends
   private static final String HTTP_METHOD = "POST";    //HTTP 메서드의 방식은 POST 이다.
 
   private static final String CONTENT_TYPE = "application/json";//json 타입의 데이터로만 로그인을 진행한다.
-  private static final String USERNAME_KEY = "username";
+  private static final String USERNAME_KEY = "usermail";
   private static final String PASSWORD_KEY = "password";
   private static final AntPathRequestMatcher DEFAULT_LOGIN_PATH_REQUEST_MATCHER =
       new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL,
@@ -50,11 +50,11 @@ public class JsonUsernamePasswordAuthenticationFilter extends
 
     Map<String, String> usernamePasswordMap = objectMapper.readValue(messageBody, Map.class);
 
-    String username = usernamePasswordMap.get(USERNAME_KEY);
+    String usermail = usernamePasswordMap.get(USERNAME_KEY);
     String password = usernamePasswordMap.get(PASSWORD_KEY);
 
     UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-        username, password);//principal 과 credentials 전달
+        usermail, password);//principal 과 credentials 전달
 
     return this.getAuthenticationManager().authenticate(authRequest);
   }

@@ -1,9 +1,12 @@
 package com.itm.ai_pingpong.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itm.ai_pingpong.global.jwt.filter.JwtAuthenticationProcessingFilter;
+import com.itm.ai_pingpong.global.jwt.service.JwtService;
 import com.itm.ai_pingpong.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
 import com.itm.ai_pingpong.global.login.handler.LoginFailureHandler;
 import com.itm.ai_pingpong.global.login.handler.LoginSuccessJWTProvideHandler;
+import com.itm.ai_pingpong.reposistory.MemberRepository;
 import com.itm.ai_pingpong.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final LoginService loginService;
   private final ObjectMapper objectMapper;
+  private final JwtService jwtService;
+  private final MemberRepository memberRepository;
 
 
   @Override
@@ -41,6 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .anyRequest().authenticated();
 
     http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);
+    http.addFilterBefore(jwtAuthenticationProcessingFilter(),
+        JsonUsernamePasswordAuthenticationFilter.class);
+    // 순서가 중요하다
 
   }
 
@@ -60,7 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler() {
-    return new LoginSuccessJWTProvideHandler();
+    return new LoginSuccessJWTProvideHandler(jwtService, memberRepository);
   }
 
   @Bean
@@ -76,6 +84,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(
         loginSuccessJWTProvideHandler());
     jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
+    return jsonUsernamePasswordLoginFilter;
+  }
+
+  @Bean
+  public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
+    JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(
+        jwtService, memberRepository);
+
     return jsonUsernamePasswordLoginFilter;
   }
 }
