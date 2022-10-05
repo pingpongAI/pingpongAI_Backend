@@ -49,7 +49,7 @@ public class MemberServiceImpl implements MemberService {
     Member member = memberRepository.findByEmail(SecurityUtil.getLoginUsername())
         .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-    if (!member.matchPassword(passwordEncoder, checkPassword)) {
+    if (member.matchPassword(passwordEncoder, checkPassword)) {
       throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
     }
 
@@ -61,7 +61,7 @@ public class MemberServiceImpl implements MemberService {
     Member member = memberRepository.findByEmail(SecurityUtil.getLoginUsername())
         .orElseThrow(() -> new MemberException(MemberExceptionType.WRONG_PASSWORD));
 
-    if (!member.matchPassword(passwordEncoder, checkPassword)) {
+    if (member.matchPassword(passwordEncoder, checkPassword)) {
       throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
     }
     memberRepository.delete(member);
