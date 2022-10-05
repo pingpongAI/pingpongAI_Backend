@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/train")
+@RequestMapping("/train")
 public class TrainController {
 
   private final TrainService trainService;
