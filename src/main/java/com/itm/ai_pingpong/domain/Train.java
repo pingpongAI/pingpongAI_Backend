@@ -41,4 +41,7 @@ public class Train extends BaseTimeEntity {
   @Column(nullable = false)
   private int wrongCount;
 
+  public void updateMember(Member findMember) {
+    this.member = findMember;
+  }
 }
