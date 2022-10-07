@@ -1,12 +1,17 @@
 package com.itm.ai_pingpong.controller;
 
 import com.itm.ai_pingpong.dto.TrainResponseDto;
+import com.itm.ai_pingpong.dto.TrainSaveDto;
 import com.itm.ai_pingpong.service.TrainService;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,4 +34,9 @@ public class TrainController {
     return trainService.findAll(id, pageable).getContent();
   }
 
+  @PostMapping("/{id}")
+  public ResponseEntity<TrainSaveDto> saveTrain(@PathVariable("id") long id,
+      @Valid @RequestBody TrainSaveDto trainSaveDto) {
+    return ResponseEntity.ok().body(trainService.saveTrain(id, trainSaveDto));
+  }
 }
